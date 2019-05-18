@@ -58,8 +58,6 @@ int readVerbs(losersArray &LosesTo) {
     return 1;
   }
 
-  losersArray losesTo;
-
   while(inputFile.good()) {
 
     string loser, winner, verb;
