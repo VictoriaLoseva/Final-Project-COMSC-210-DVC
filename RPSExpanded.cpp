@@ -3,6 +3,8 @@
 #include <sstream>
 #include <string>
 #include <list>
+#include "AssociativeArray.h"
+
 
 using namespace std;
 
@@ -40,6 +42,7 @@ int main(void) {
   }
 
   int numOfPlayers = getPlayerNum();
+    
 
   return 0;
 
@@ -79,6 +82,9 @@ int getPlayerNum() {
   cout << "Please enter number of players: ";
   cin >> playNum;
   return playNum;
+  
+    
+    
 }
 //function that returns the winner of the match
 Player P1vsP2 (Player A, Player B, const losersArray& LosesTo ) {
