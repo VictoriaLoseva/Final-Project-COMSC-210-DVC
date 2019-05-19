@@ -32,7 +32,7 @@ Player findLoser(Player, Player, const losersArray&);
 Player findWinner(Player, Player, const losersArray&);
 
 int    getPlayerNum();
-void   getPlayerWeapons(Player*, int);
+void   getPlayerWeapons(Player*, int, losersArray&);
 void   resolveResults(Player*, int, const losersArray&);
 bool   isDraw(Player*, int);
 
@@ -49,7 +49,7 @@ int main(void) {
 
   Player* playersArr = new Player[numOfPlayers];
 
-  getPlayerWeapons(playersArr, numOfPlayers);
+  getPlayerWeapons(playersArr, numOfPlayers, losesTo);
 
   resolveResults(playersArr, numOfPlayers, losesTo);
 
@@ -117,19 +117,27 @@ void resolveResults(Player* playersArr, int numOfPlayers, const losersArray& los
 
 bool isDraw(Player* playersArr, int numOfPlayers) {
   for(int i = 0; i < numOfPlayers - 1; i++) {
-    if(playersArr[i] != playersArr[i + 1])
+    if(playersArr[i].inGame != playersArr[i + 1].inGame)
       return false;
   }
   return true; 
 }
 
-void getPlayerWeapons(Player* A, int size) {
 
+void   getPlayerWeapons(Player* A, int size, losersArray & losesTo ) {
+    string input;
+    bool correctInput = false;
     for (int x = 0; x < size; x++) {
 
-        cout << "Player " << x << " please enter your weapon: " ;
-        getline(cin, A[x].weapon);
-    }
+        while (!correctInput){
 
+        cout << "Player " << x << " please enter your weapon: " ;
+        getline(cin, input);
+        correctInput = losesTo.containsKey(input);
+        
+            if (!correctInput) cout << "Please enter a correct weapon.." << endl;
+  
+        }
+    }
 
 }

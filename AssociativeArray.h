@@ -41,7 +41,7 @@ public:
   AssociativeArray<K,V>& operator= (const AssociativeArray<K,V>&);
 
   //Destructor
-  ~AssociativeArray<K,V>();
+//  ~AssociativeArray<K,V>();
 };
 
 //Constructor
@@ -205,8 +205,8 @@ void AssociativeArray<K,V>::setCapacity(int newCap) {
 
 //destructor
 //=====================================
-template<typename K, typename V>
-AssociativeArray<K,V>::~AssociativeArray() {
-  delete[] values; 
-}
+//template<typename K, typename V>
+//AssociativeArray<K,V>::~AssociativeArray() {
+//  delete[] values; 
+//}
 #endif
