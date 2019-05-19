@@ -131,14 +131,13 @@ void getPlayerWeapons(Player* A, int size, losersArray & losesTo ) {
     bool correctInput = false;
     for (int x = 0; x < size; x++) {
 
-        while (!correctInput){
-
-        cout << "Player " << x << " please enter your weapon: " ;
-        getline(cin, input);
-        correctInput = losesTo.containsKey(input);
-
-            if (!correctInput) cout << "Please enter a correct weapon.." << endl;
-
+        while (true){
+          cout << "Player " << x << " please enter your weapon: " ;
+          getline(cin, input);
+          if(losesTo.containsKey(input))
+            break;
+          else
+            cout << "Please enter a correct weapon.." << endl;
         }
     }
 
