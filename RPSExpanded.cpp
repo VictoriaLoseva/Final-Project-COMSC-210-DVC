@@ -13,9 +13,9 @@ using namespace std;
 //Array of Players
 struct Player {
   string name;
-  bool ingame;
+  bool inGame;
   list <string> destroyers;
-  string character;
+  string weapon;
 };
 
 //Typedefs
@@ -26,9 +26,10 @@ typedef AssociativeArray<string, AssociativeArray<string, string> > losersArray;
 //Prototypes
 //=====================================
 int    readVerbs(losersArray &);
-Player P1vsP2 (Player, Player, const losersArray&);
+Player findLoser(Player, Player, const losersArray&);
 int    getPlayerNum();
 void   getPlayerChars(Player*, int);
+bool   resolveResults(Players*, int);
 
 //Main routine
 //=====================================
@@ -41,9 +42,11 @@ int main(void) {
 
   int numOfPlayers = getPlayerNum();
 
-  Player playersArr = new Player[numOfPlayers];
+  Player* playersArr = new Player[numOfPlayers];
 
   getPlayerChars(playersArr, numOfPlayers);
+
+  resolveResults(playerArr, numOfPlayers);
 
   return 0;
 
@@ -84,12 +87,22 @@ int getPlayerNum() {
 
 }
 
-//function that returns the winner of the match
-Player P1vsP2 (Player A, Player B, const losersArray& LosesTo ) {
-
+//function that returns the loser of the match
+Player findLoser(Player A, Player B) {
     bool loses = LosesTo[A.name].containsKey(B.name);
-
-
     return loses ? A : B;
 
+}
+
+bool resolveResults(Player* playersArr, int numOfPlayers) {
+   //Compare every player to every other player except self
+   for(int i = 0; i < numOfPlayers - 1; i++) {
+     for(int j = 0; j < numOfPlayers; j++) {
+       Player loser = findLoser(playersArr[i], playersArr[j]);
+       Player loser, winner;
+       loser.inGame = false;
+       loser.destroyers.push_back(winner.name);
+     }
+   }
+   return true;
 }
