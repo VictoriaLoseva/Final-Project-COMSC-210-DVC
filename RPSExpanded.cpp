@@ -29,7 +29,7 @@ int    readVerbs(losersArray &);
 Player findLoser(Player, Player, const losersArray&);
 int    getPlayerNum();
 void   getPlayerChars(Player*, int);
-bool   resolveResults(Players*, int);
+void   resolveResults(Players*, int);
 
 //Main routine
 //=====================================
@@ -56,7 +56,7 @@ int main(void) {
 //=====================================
 
 //Function to read info from file
-int readVerbs(losersArray &LosesTo) {
+int readVerbs(losersArray &losesTo) {
   ifstream inputFile;
   inputFile.open("verbs.txt");
 
@@ -91,18 +91,22 @@ int getPlayerNum() {
 Player findLoser(Player A, Player B) {
     bool loses = LosesTo[A.name].containsKey(B.name);
     return loses ? A : B;
-
 }
 
-bool resolveResults(Player* playersArr, int numOfPlayers) {
+Player findWinner(Player A, Player B) {
+    bool loses = LosesTo[A.name].containsKey(B.name);
+    return !loses ? A : B;
+}
+
+
+//resolveResults marks all losers as such and adds their winners to thir arrays
+void resolveResults(Player* playersArr, int numOfPlayers, const losersArray& losesTo) {
    //Compare every player to every other player except self
-   for(int i = 0; i < numOfPlayers - 1; i++) {
+   for(int i = 0; i < numOfPlayers - 1; i++)
      for(int j = 0; j < numOfPlayers; j++) {
-       Player loser = findLoser(playersArr[i], playersArr[j]);
-       Player loser, winner;
+       Player loser = findLoser(playersArr[i], playersArr[j], loses);
+       Player winner = findWinner(playersArr[i], playersArr[j], loses);
        loser.inGame = false;
        loser.destroyers.push_back(winner.name);
      }
-   }
-   return true;
 }
