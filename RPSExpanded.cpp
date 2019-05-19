@@ -3,7 +3,7 @@
 #include <sstream>
 #include <string>
 #include <list>
-
+#include <queue>
 
 
 using namespace std;
@@ -28,11 +28,11 @@ typedef AssociativeArray<string, AssociativeArray<string, string> > losersArray;
 //Prototypes
 //=====================================
 int    readVerbs(losersArray &);
-Player findLoser(Player, Player, const losersArray&);
-Player findWinner(Player, Player, const losersArray&);
+Player* findLoser(Player*, Player*, const losersArray&);
+Player* findWinner(Player*, Player*, const losersArray&);
 
 int    getPlayerNum();
-void   getPlayerWeapons(Player*, int, losersArray&);
+void   getPlayerWeapons(Player*, int, const losersArray&);
 void   resolveResults(Player*, int, const losersArray&);
 bool   isDraw(Player*, int);
 
@@ -76,11 +76,27 @@ int readVerbs(losersArray &losesTo) {
 
     string loser, winner, verb;
     getline(inputFile, loser, ',');
-    getline(inputFile, winner, ',');
-    getline(inputFile, verb, '\n');
+    getline(inputFile, verb, ',');
+    getline(inputFile, winner, '\n');
 
+    if(loser == "") continue;
     losesTo[loser][winner] = verb;
   }
+
+  //Debugging segment
+  /*queue<string> losers = losesTo.keys();
+  cout << "size of losesTo:" << losesTo.getSize() << endl;
+  cout << "size of losers :" << losers.size() << endl;
+  for(int i = 0; i < losers.size();){
+    cout << losers.front() << " loses to:" << endl;
+    queue<string> winners = losesTo[losers.front()].keys();
+    for(int j = 0; j < winners.size();) {
+       cout << "    " << winners.front() << endl;
+       winners.pop();
+     }
+    losers.pop();
+  }
+  cout << endl;*/
 
   return 0;
 
@@ -96,25 +112,34 @@ int getPlayerNum() {
 }
 
 //functions that return the loser/winner of the match
-Player findLoser(Player A, Player B, const losersArray& LosesTo) {
-    bool loses = LosesTo[A.weapon].containsKey(B.weapon);
+Player* findLoser(Player* A, Player* B, const losersArray& LosesTo) {
+    bool loses = LosesTo[A->weapon].containsKey(B->weapon);
     return loses ? A : B;
 }
 
-Player findWinner(Player A, Player B, const losersArray& LosesTo) {
-    bool loses = LosesTo[A.weapon].containsKey(B.weapon);
-    return !loses ? A : B;
+Player* findWinner(Player* A, Player* B, const losersArray& LosesTo) {
+    bool loses = LosesTo[A->weapon].containsKey(B->weapon);
+    return loses ? B : A;
 }
 
 //resolveResults marks all losers as such and adds their destroyers to their arrays
 void resolveResults(Player* playersArr, int numOfPlayers, const losersArray& losesTo) {
    //Compare every player to every other player except self
    for(int i = 0; i < numOfPlayers - 1; i++)
-     for(int j = 0; j < numOfPlayers; j++) {
-       Player loser = findLoser(playersArr[i], playersArr[j], losesTo);
-       Player winner = findWinner(playersArr[i], playersArr[j], losesTo);
-       loser.inGame = false;
-       loser.destroyers.push_back(winner.name);
+     for(int j = i + 1; j < numOfPlayers; j++) {
+       Player* loser = findLoser(&playersArr[i], &playersArr[j], losesTo);
+       Player* winner = findWinner(&playersArr[i], &playersArr[j], losesTo);
+       loser->inGame = false;
+       loser->destroyers.push_back(winner->name);
+
+       //Debbuging segment
+       /*cout << "Loser: " << loser->name << " with " << loser->weapon << endl;
+       cout << "Winner: " << winner->name << " with " << winner->weapon << endl;
+
+       for(int i = 0; i < numOfPlayers; i++) {
+         cout << playersArr[i].name << " in game: " << (playersArr[i].inGame ? "true" : "false") << endl;
+       }
+       cout << endl;*/
      }
 }
 
@@ -126,9 +151,10 @@ bool isDraw(Player* playersArr, int numOfPlayers) {
   return true;
 }
 
-void getPlayerWeapons(Player* A, int size, losersArray & losesTo ) {
+void getPlayerWeapons(Player* A, int size, const losersArray & losesTo ) {
     string input;
     bool correctInput = false;
+
     for (int x = 0; x < size; x++) {
         A[x].inGame = true;
         while (true){
@@ -139,6 +165,8 @@ void getPlayerWeapons(Player* A, int size, losersArray & losesTo ) {
           else
             cout << "Please enter a correct weapon.." << endl;
         }
+        A[x].weapon = input;
+        A[x].name = "Player" + to_string(x);
     }
 
 }
