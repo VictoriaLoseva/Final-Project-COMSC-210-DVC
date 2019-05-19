@@ -10,10 +10,6 @@ using namespace std;
 
 #include "AssociativeArray.h"
 
-
-
-
-
 //Structs
 //=====================================
 //Array of Players
@@ -38,6 +34,7 @@ Player findWinner(Player, Player, const losersArray&);
 int    getPlayerNum();
 void   getPlayerWeapons(Player*, int);
 void   resolveResults(Player*, int, const losersArray&);
+bool   isDraw(Player*, int);
 
 //Main routine
 //=====================================
@@ -47,7 +44,6 @@ int main(void) {
   if(readVerbs(losesTo) != 0) {
     return 1;
   }
-
 
   int numOfPlayers = getPlayerNum();
 
@@ -96,19 +92,18 @@ int getPlayerNum() {
 
 }
 
-//function that returns the loser of the match
+//functions that return the loser/winner of the match
 Player findLoser(Player A, Player B, const losersArray& LosesTo) {
-    bool loses = LosesTo[A.name].containsKey(B.name);
+    bool loses = LosesTo[A.weapon].containsKey(B.weapon);
     return loses ? A : B;
 }
 
 Player findWinner(Player A, Player B, const losersArray& LosesTo) {
-    bool loses = LosesTo[A.name].containsKey(B.name);
+    bool loses = LosesTo[A.weapon].containsKey(B.weapon);
     return !loses ? A : B;
 }
 
-
-//resolveResults marks all losers as such and adds their winners to thir arrays
+//resolveResults marks all losers as such and adds their destroyers to their arrays
 void resolveResults(Player* playersArr, int numOfPlayers, const losersArray& losesTo) {
    //Compare every player to every other player except self
    for(int i = 0; i < numOfPlayers - 1; i++)
@@ -120,7 +115,15 @@ void resolveResults(Player* playersArr, int numOfPlayers, const losersArray& los
      }
 }
 
-void   getPlayerWeapons(Player* A, int size) {
+bool isDraw(Player* playersArr, int numOfPlayers) {
+  for(int i = 0; i < numOfPlayers - 1; i++) {
+    if(playersArr[i] != playersArr[i + 1])
+      return false;
+  }
+  return true; 
+}
+
+void getPlayerWeapons(Player* A, int size) {
 
     for (int x = 0; x < size; x++) {
 
