@@ -1,4 +1,3 @@
-Loser, Winner, verb
 Scissors, Rock, are blunted by
 Scissors, LHC, are magnetized by
 Scissors, Spock, are bent by

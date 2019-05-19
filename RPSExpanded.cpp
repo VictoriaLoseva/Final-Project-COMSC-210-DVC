@@ -53,6 +53,8 @@ int main(void) {
 
   resolveResults(playersArr, numOfPlayers, losesTo);
 
+  if(isDraw(playersArr, numOfPlayers))
+    cout << "Draw! " << endl;
   return 0;
 
 }
@@ -88,6 +90,7 @@ int getPlayerNum() {
   int playNum;
   cout << "Please enter number of players: ";
   cin >> playNum;
+  cin.ignore(1000, 10);
   return playNum;
 
 }
@@ -120,11 +123,10 @@ bool isDraw(Player* playersArr, int numOfPlayers) {
     if(playersArr[i].inGame != playersArr[i + 1].inGame)
       return false;
   }
-  return true; 
+  return true;
 }
 
-
-void   getPlayerWeapons(Player* A, int size, losersArray & losesTo ) {
+void getPlayerWeapons(Player* A, int size, losersArray & losesTo ) {
     string input;
     bool correctInput = false;
     for (int x = 0; x < size; x++) {
@@ -134,9 +136,9 @@ void   getPlayerWeapons(Player* A, int size, losersArray & losesTo ) {
         cout << "Player " << x << " please enter your weapon: " ;
         getline(cin, input);
         correctInput = losesTo.containsKey(input);
-        
+
             if (!correctInput) cout << "Please enter a correct weapon.." << endl;
-  
+
         }
     }
 
