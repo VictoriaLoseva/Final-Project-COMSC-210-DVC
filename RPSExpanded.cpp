@@ -113,13 +113,21 @@ int getPlayerNum() {
 
 //functions that return the loser/winner of the match
 Player* findLoser(Player* A, Player* B, const losersArray& LosesTo) {
-    bool loses = LosesTo[A->weapon].containsKey(B->weapon);
-    return loses ? A : B;
+  //Handle both players having same weapon:
+  if(A->weapon == B->weapon)
+    return nullptr;
+  //Find loser:
+  bool loses = LosesTo[A->weapon].containsKey(B->weapon);
+  return loses ? A : B;
 }
 
 Player* findWinner(Player* A, Player* B, const losersArray& LosesTo) {
-    bool loses = LosesTo[A->weapon].containsKey(B->weapon);
-    return loses ? B : A;
+  //Handle both players having same weapon:
+  if(A->weapon == B->weapon)
+    return nullptr;
+  //Find winner:
+  bool loses = LosesTo[A->weapon].containsKey(B->weapon);
+  return loses ? B : A;
 }
 
 //resolveResults marks all losers as such and adds their destroyers to their arrays
@@ -129,6 +137,11 @@ void resolveResults(Player* playersArr, int numOfPlayers, const losersArray& los
      for(int j = i + 1; j < numOfPlayers; j++) {
        Player* loser = findLoser(&playersArr[i], &playersArr[j], losesTo);
        Player* winner = findWinner(&playersArr[i], &playersArr[j], losesTo);
+
+       //If both players have same weapon (indicated by nullptr), move on:
+       if(loser == nullptr)
+         continue;
+        //Else, assign losers:
        loser->inGame = false;
        loser->destroyers.push_back(winner->name);
 
@@ -144,9 +157,11 @@ void resolveResults(Player* playersArr, int numOfPlayers, const losersArray& los
 }
 
 bool isDraw(Player* playersArr, int numOfPlayers) {
+  //Compare every player to the next. If at least one !=, is not draw.
   for(int i = 0; i < numOfPlayers - 1; i++) {
-    if(playersArr[i].inGame != playersArr[i + 1].inGame)
+    if(playersArr[i].inGame != playersArr[i + 1].inGame){
       return false;
+    }
   }
   return true;
 }
