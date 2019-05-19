@@ -130,7 +130,7 @@ void getPlayerWeapons(Player* A, int size, losersArray & losesTo ) {
     string input;
     bool correctInput = false;
     for (int x = 0; x < size; x++) {
-
+        A[x].inGame = true;
         while (true){
           cout << "Player " << x << " please enter your weapon: " ;
           getline(cin, input);
