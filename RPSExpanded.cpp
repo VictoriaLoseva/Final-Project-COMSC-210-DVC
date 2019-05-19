@@ -3,8 +3,6 @@
 #include <sstream>
 #include <string>
 #include <list>
-#include "AssociativeArray.h"
-
 
 using namespace std;
 
@@ -17,7 +15,7 @@ struct Player {
   string name;
   bool ingame;
   list <string> destroyers;
-  string charachter;
+  string character;
 };
 
 //Typedefs
@@ -30,7 +28,7 @@ typedef AssociativeArray<string, AssociativeArray<string, string> > losersArray;
 int    readVerbs(losersArray &);
 Player P1vsP2 (Player, Player, const losersArray&);
 int    getPlayerNum();
-
+void   getPlayerChars(Player*, int);
 
 //Main routine
 //=====================================
@@ -42,7 +40,10 @@ int main(void) {
   }
 
   int numOfPlayers = getPlayerNum();
-    
+
+  Player playersArr = new Player[numOfPlayers];
+
+  getPlayerChars(playersArr, numOfPlayers);
 
   return 0;
 
@@ -60,8 +61,6 @@ int readVerbs(losersArray &LosesTo) {
     cout << "Could not open file" << endl;
     return 1;
   }
-
-  losersArray losesTo;
 
   while(inputFile.good()) {
 
@@ -82,10 +81,9 @@ int getPlayerNum() {
   cout << "Please enter number of players: ";
   cin >> playNum;
   return playNum;
-  
-    
-    
+
 }
+
 //function that returns the winner of the match
 Player P1vsP2 (Player A, Player B, const losersArray& LosesTo ) {
 
