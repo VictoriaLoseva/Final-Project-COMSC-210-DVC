@@ -37,18 +37,12 @@ Player findWinner(Player, Player, const losersArray&);
 
 int    getPlayerNum();
 void   getPlayerWeapons(Player*, int);
-void   resolveResults(Player*, int);
-
-
-
-
+void   resolveResults(Player*, int, const losersArray&);
 
 //Main routine
 //=====================================
 int main(void) {
 
-    
-    
   losersArray losesTo;
   if(readVerbs(losesTo) != 0) {
     return 1;
@@ -61,7 +55,7 @@ int main(void) {
 
   getPlayerWeapons(playersArr, numOfPlayers);
 
-  resolveResults(playersArr, numOfPlayers);
+  resolveResults(playersArr, numOfPlayers, losesTo);
 
   return 0;
 
@@ -108,7 +102,7 @@ Player findLoser(Player A, Player B, const losersArray& LosesTo) {
     return loses ? A : B;
 }
 
-Player findWinner(Player A, Player B, losersArray& LosesTo) {
+Player findWinner(Player A, Player B, const losersArray& LosesTo) {
     bool loses = LosesTo[A.name].containsKey(B.name);
     return !loses ? A : B;
 }
@@ -127,13 +121,12 @@ void resolveResults(Player* playersArr, int numOfPlayers, const losersArray& los
 }
 
 void   getPlayerWeapons(Player* A, int size) {
-    
+
     for (int x = 0; x < size; x++) {
-        
+
         cout << "Player " << x << " please enter your weapon: " ;
         getline(cin, A[x].weapon);
     }
-    
-    
-}
 
+
+}
