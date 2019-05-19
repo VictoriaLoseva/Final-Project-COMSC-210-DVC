@@ -15,7 +15,7 @@ struct Player {
   string name;
   bool ingame;
   list <string> destroyers;
-  string charachter;
+  string character;
 };
 
 //Typedefs
@@ -28,6 +28,8 @@ typedef AssociativeArray<string, AssociativeArray<string, string> > losersArray;
 int    readVerbs(losersArray &);
 Player P1vsP2 (Player, Player, const losersArray&);
 int    getPlayerNum();
+void   getCharacters(Player*, int); 
+
 
 
 //Main routine
@@ -40,6 +42,10 @@ int main(void) {
   }
 
   int numOfPlayers = getPlayerNum();
+
+  Player playersArray = new Player[numOfPlayers];
+
+  getCharacters(playersArray, numOfPlayers);
 
   return 0;
 
