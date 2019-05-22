@@ -1,21 +1,21 @@
-Scissors, are blunted by,Rock
-Scissors, are bent by,Spock
-Scissors, are magnetized by,LHC
-Paper, is eaten by,Lizard
-Paper, is cut by,Scissors
-Paper, is shredded by,Zombie
-Rock, is covered by,Paper
-Rock, is vaporized by,Spock
-Rock, is nuked by,LHC
-Lizard, is decapitated by,Scissors
-Lizard, is swallowed by,Zombie
-Lizard, is crushed by,Rock
-LHC, is reprogrammed by,Paper
-LHC, is deactivated by,Spock
-LHC, fails to harm,Lizard
-Zombie, is cured by,LHC
-Zombie, is tripped by,Rock
-Zombie, is stabbed by,Scissors
-Spock, braaaaains,Zombie
-Spock, is poisoned by,Lizard
-Spock, is disproved by,Paper
+Scissors, are blunted by ,Rock
+Scissors, are bent by ,Spock
+Scissors, are magnetized by ,LHC
+Paper, is eaten by ,Lizard
+Paper, is cut by ,Scissors
+Paper, is shredded by ,Zombie
+Rock, is covered by ,Paper
+Rock, is vaporized by ,Spock
+Rock, is nuked by ,LHC
+Lizard, is decapitated by ,Scissors
+Lizard, is swallowed by ,Zombie
+Lizard, is crushed by ,Rock
+LHC, is reprogrammed by ,Paper
+LHC, is deactivated by ,Spock
+LHC, fails to harm ,Lizard
+Zombie, is cured by ,LHC
+Zombie, is tripped by ,Rock
+Zombie, is stabbed by ,Scissors
+Spock, braaaaains ,Zombie
+Spock, is poisoned by ,Lizard
+Spock, is disproved by ,Paper

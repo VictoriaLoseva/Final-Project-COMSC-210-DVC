@@ -55,6 +55,19 @@ int main(void) {
 
   if(isDraw(playersArr, numOfPlayers))
     cout << "Draw! " << endl;
+
+  for(int i = 0; i < numOfPlayers; i++) {
+    cout << playersArr[i].name << (playersArr[i].inGame ? " has won" : " has lost") << endl;
+     if(!playersArr[i].inGame) {
+       cout << "    " playersArr[i].weapon ;
+       int winner;
+       for(int j = 0; j < numOfPlayers; j++) {
+         if(playersArr[i].destroyers.front() == playersArr[j].name)
+           winner = j;
+       }
+       cout << losesTo[playersArr[i].weapon][playersArr[winner].weapon] << playersArr[winner].weapon << endl;
+     }
+  }
   return 0;
 
 }
