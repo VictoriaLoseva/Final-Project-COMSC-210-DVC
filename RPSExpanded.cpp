@@ -16,6 +16,7 @@ using namespace std;
 struct Player {
   int number;
   string name;
+ develop
   bool inGame;
   list <int> destroyers;
   string weapon;
@@ -38,6 +39,7 @@ Player* findLoser(Player&, Player&, const losersArray&);
 Player* findWinner(Player&, Player&, const losersArray&);
 
 int    getPlayerNum();
+
 void   getPlayerWeapons(vector<Player>&,  const losersArray&);
 void   resolveResults(vector<Player>&, const losersArray&);
 bool   isDraw(vector<Player>&);
@@ -64,7 +66,9 @@ int main(void) {
 
   int numOfPlayers = getPlayerNum();
 
+
   vector<Player> playersArr (numOfPlayers);
+
 
   for(int i = 0; i < playersArr.size(); i++) {
     playersArr[i].name = "Player" + to_string(i);
