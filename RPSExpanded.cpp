@@ -1,11 +1,8 @@
 #include <fstream>
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <list>
-#include <queue>
 #include <vector>
-
 
 using namespace std;
 
@@ -34,24 +31,29 @@ typedef AssociativeArray<string, AssociativeArray<string, string> > losersArray;
 
 //Prototypes
 //=====================================
-int    readVerbs(losersArray &);
+int     readVerbs(losersArray &);
 Player* findLoser(Player&, Player&, const losersArray&);
 Player* findWinner(Player&, Player&, const losersArray&);
 
-int    getPlayerNum();
-void   getPlayerWeapons(vector<Player>&,  const losersArray&);
-void   resolveResults(vector<Player>&, const losersArray&);
-bool   isDraw(vector<Player>&);
+int     getPlayerNum();
+void    getPlayerWeapons(vector<Player>&,  const losersArray&);
+void    resolveResults(vector<Player>&, const losersArray&);
+bool    isDraw(vector<Player>&);
 
-void   copyContents(Player*, Player*);
+void    copyContents(Player*, Player*);
+
+void    printResults(const vector<Player>&,  const losersArray&);
+void    playRound(vector<Player>&, const losersArray&);
+
+
 
 
 //Main routine
 //=====================================
 int main(void) {
 
-    bool playing = true;
-    vector <Player> winners;
+  bool playing = true;
+  vector <Player> winners;
 
   losersArray losesTo;
   if(readVerbs(losesTo) != 0) {
@@ -60,38 +62,23 @@ int main(void) {
 
   int numOfPlayers = getPlayerNum();
 
-   vector<Player> playersArr (numOfPlayers);
+  vector<Player> playersArr (numOfPlayers);
 
-  getPlayerWeapons(playersArr,  losesTo);
-
-  resolveResults(playersArr, losesTo);
-
-  if(isDraw(playersArr))
-    cout << "Draw! " << endl;
-
-
-
-  for(int i = 0; i < numOfPlayers; i++) {
-    cout << playersArr[i].name << (playersArr[i].inGame ? " has won" : " has lost") << endl;
-     if(!playersArr[i].inGame) {
-       cout << "    "<<  playersArr[i].weapon ;
-       int winner;
-       for(int j = 0; j < numOfPlayers; j++) {
-         if(playersArr[i].destroyers.front() == playersArr[j].number)
-           winner = j;
-           winners.push_back(playersArr[winner]);
-       }
-       cout << losesTo[playersArr[i].weapon][playersArr[winner].weapon] << playersArr[winner].weapon << endl;
-     }
+  for(int i = 0; i < playersArr.size(); i++) {
+    playersArr[i].name = "Player" + to_string(i);
   }
 
-   playing = ! winners.size() || (winners.size() == 1);
+  int roundNumber = 1;
 
-   findLongestLoopInGraph(playersArr, losesTo);
+  while(playersArr.size() > 1) {
+    cout << endl << "Playing round " << roundNumber << endl;
+    cout << "*************************************" << endl;
+    playRound(playersArr, losesTo);
+    roundNumber++;
+  }
 
-
-  return 0;
-
+  cout << "************* WINNER *****************" << endl;
+  cout << "Winner is " << playersArr[0].name << endl << endl;
 }
 
 //Secondary Functions
@@ -176,7 +163,8 @@ void resolveResults(vector<Player>& playersArr, const losersArray& losesTo) {
        //If both players have same weapon (indicated by nullptr), move on:
        if(loser == nullptr)
          continue;
-        //Else, assign losers:
+
+       //Else, assign losers:
        loser->inGame = false;
        loser->destroyers.push_back(winner->number);
 
@@ -206,9 +194,11 @@ void getPlayerWeapons(vector<Player>& A, const losersArray & losesTo ) {
     bool correctInput = false;
 
     for (int x = 0; x < A.size(); x++) {
+        A[x].number = x;
         A[x].inGame = true;
+        A[x].destroyers = list<int>();
         while (true){
-          cout << "Player " << x + 1 << " please enter your weapon: " ;
+          cout <<  A[x].name << " please enter your weapon: " ;
           getline(cin, input);
           if(losesTo.containsKey(input))
             break;
@@ -216,7 +206,42 @@ void getPlayerWeapons(vector<Player>& A, const losersArray & losesTo ) {
             cout << "Please enter a correct weapon.." << endl;
         }
         A[x].weapon = input;
-        A[x].number = x;
-        A[x].name = "Player" + to_string(x);
     }
+    cout << endl;
+}
+
+
+void printResults(const vector<Player>& playersArr, const losersArray& losesTo) {
+  for(int i = 0; i < playersArr.size(); i++) {
+    cout << playersArr[i].name << (playersArr[i].inGame ? " has won\n" : " has lost: ");
+     if(!playersArr[i].inGame) {
+       for(list<int>::const_iterator it = playersArr[i].destroyers.begin(); it != playersArr[i].destroyers.end(); it++) {
+       if(it != playersArr[i].destroyers.begin()) cout << "                  ";
+       cout << playersArr[i].weapon
+            << losesTo[playersArr[i].weapon][playersArr[*it].weapon]
+            << playersArr[*it].weapon << endl;
+        }
+       cout << endl;
+     }
+   }
+  cout << endl;
+}
+
+void playRound(vector<Player>& playersArr, const losersArray & losesTo) {
+  getPlayerWeapons(playersArr, losesTo);
+
+  resolveResults(playersArr, losesTo);
+
+  printResults(playersArr, losesTo);
+
+  findLongestLoopInGraph(playersArr, losesTo);
+
+  //If is not draw, pop losers
+  if(!isDraw(playersArr)) {
+    for(int i = 0; i < playersArr.size(); i++)
+      if(playersArr[i].inGame == false) {
+        playersArr.erase(playersArr.begin() + i);
+        i--;
+      }
+  }
 }

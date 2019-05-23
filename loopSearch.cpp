@@ -125,11 +125,12 @@ void findLongestLoopInGraph(vector<Player>& players, const losersArray& losesTo)
      string loserWeapon = players[*it].weapon;
      string winnerWeapon = players[*ij].weapon;
      cout << (it == longest.begin() ? "" : "   ...but ");
-     cout << loserWeapon << losesTo[loserWeapon][winnerWeapon] << winnerWeapon << endl;
+     cout << loserWeapon << losesTo[loserWeapon][winnerWeapon] << winnerWeapon
+          << " (" << players[*ij].name << ")" << endl;
    }
    string winnerWeapon = players[players[longest.front()].number].weapon;
    cout << "   ...and " << players[*it].weapon << losesTo[players[*it].weapon][winnerWeapon]
-       << winnerWeapon << "." << endl;
+       << winnerWeapon << " (" << players[players[longest.front()].number].name << ")." << endl;
 
-   cout << endl;
+   cout << endl << endl;
 }
