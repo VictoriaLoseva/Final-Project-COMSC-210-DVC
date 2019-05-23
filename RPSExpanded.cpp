@@ -4,6 +4,7 @@
 #include <string>
 #include <list>
 #include <queue>
+#include <vector>
 
 
 using namespace std;
@@ -14,10 +15,13 @@ using namespace std;
 //=====================================
 //Array of Players
 struct Player {
+  int number;
   string name;
   bool inGame;
   list <string> destroyers;
   string weapon;
+    
+
 };
 
 //Typedefs
@@ -28,46 +32,64 @@ typedef AssociativeArray<string, AssociativeArray<string, string> > losersArray;
 //Prototypes
 //=====================================
 int    readVerbs(losersArray &);
-Player* findLoser(Player*, Player*, const losersArray&);
-Player* findWinner(Player*, Player*, const losersArray&);
+Player* findLoser(Player&, Player&, const losersArray&);
+Player* findWinner(Player&, Player&, const losersArray&);
 
 int    getPlayerNum();
-void   getPlayerWeapons(Player*, int, const losersArray&);
-void   resolveResults(Player*, int, const losersArray&);
-bool   isDraw(Player*, int);
+void   getPlayerWeapons(vector<Player>&,  const losersArray&);
+void   resolveResults(vector<Player>&, const losersArray&);
+bool   isDraw(vector<Player>&);
+
+void copyContents(Player*, Player*);
+
 
 //Main routine
 //=====================================
 int main(void) {
 
+    bool playing = true;
+    vector <Player> winners;
+    
   losersArray losesTo;
   if(readVerbs(losesTo) != 0) {
     return 1;
   }
 
+ 
+        
+
+     
   int numOfPlayers = getPlayerNum();
 
-  Player* playersArr = new Player[numOfPlayers];
+   vector<Player> playersArr (numOfPlayers);
 
-  getPlayerWeapons(playersArr, numOfPlayers, losesTo);
+  getPlayerWeapons(playersArr,  losesTo);
 
-  resolveResults(playersArr, numOfPlayers, losesTo);
+  resolveResults(playersArr, losesTo);
 
-  if(isDraw(playersArr, numOfPlayers))
+  if(isDraw(playersArr))
     cout << "Draw! " << endl;
 
   for(int i = 0; i < numOfPlayers; i++) {
     cout << playersArr[i].name << (playersArr[i].inGame ? " has won" : " has lost") << endl;
      if(!playersArr[i].inGame) {
-       cout << "    " playersArr[i].weapon ;
+       cout << "    "<<  playersArr[i].weapon ;
        int winner;
        for(int j = 0; j < numOfPlayers; j++) {
          if(playersArr[i].destroyers.front() == playersArr[j].name)
            winner = j;
+           winners.push_back(playersArr[winner]);
        }
        cout << losesTo[playersArr[i].weapon][playersArr[winner].weapon] << playersArr[winner].weapon << endl;
      }
   }
+     
+     playing = ! winners.size() || (winners.size() == 1);
+     
+     
+     
+
+    
   return 0;
 
 }
@@ -125,7 +147,7 @@ int getPlayerNum() {
 }
 
 //functions that return the loser/winner of the match
-Player* findLoser(Player* A, Player* B, const losersArray& LosesTo) {
+Player* findLoser(Player*A, Player* B, const losersArray& LosesTo) {
   //Handle both players having same weapon:
   if(A->weapon == B->weapon)
     return nullptr;
@@ -144,10 +166,10 @@ Player* findWinner(Player* A, Player* B, const losersArray& LosesTo) {
 }
 
 //resolveResults marks all losers as such and adds their destroyers to their arrays
-void resolveResults(Player* playersArr, int numOfPlayers, const losersArray& losesTo) {
+void resolveResults(vector<Player>& playersArr, const losersArray& losesTo) {
    //Compare every player to every other player except self
-   for(int i = 0; i < numOfPlayers - 1; i++)
-     for(int j = i + 1; j < numOfPlayers; j++) {
+   for(int i = 0; i < playersArr.size() - 1; i++)
+     for(int j = i + 1; j < playersArr.size(); j++) {
        Player* loser = findLoser(&playersArr[i], &playersArr[j], losesTo);
        Player* winner = findWinner(&playersArr[i], &playersArr[j], losesTo);
 
@@ -169,9 +191,9 @@ void resolveResults(Player* playersArr, int numOfPlayers, const losersArray& los
      }
 }
 
-bool isDraw(Player* playersArr, int numOfPlayers) {
+bool isDraw(vector<Player>& playersArr) {
   //Compare every player to the next. If at least one !=, is not draw.
-  for(int i = 0; i < numOfPlayers - 1; i++) {
+  for(int i = 0; i < playersArr.size() - 1; i++) {
     if(playersArr[i].inGame != playersArr[i + 1].inGame){
       return false;
     }
@@ -179,14 +201,14 @@ bool isDraw(Player* playersArr, int numOfPlayers) {
   return true;
 }
 
-void getPlayerWeapons(Player* A, int size, const losersArray & losesTo ) {
+void getPlayerWeapons(vector<Player>& A, const losersArray & losesTo ) {
     string input;
     bool correctInput = false;
 
-    for (int x = 0; x < size; x++) {
+    for (int x = 0; x < A.size(); x++) {
         A[x].inGame = true;
         while (true){
-          cout << "Player " << x << " please enter your weapon: " ;
+          cout << "Player " << x + 1 << " please enter your weapon: " ;
           getline(cin, input);
           if(losesTo.containsKey(input))
             break;
@@ -196,5 +218,9 @@ void getPlayerWeapons(Player* A, int size, const losersArray & losesTo ) {
         A[x].weapon = input;
         A[x].name = "Player" + to_string(x);
     }
+    
+    
 
 }
+
+
