@@ -22,9 +22,7 @@ struct Player {
   string weapon;
 
   //Graph traversal members
-  bool isVisited;
-  int  prev;
-  int  cost;
+  list<int> path;
 
 };
 
@@ -32,6 +30,7 @@ struct Player {
 //=====================================
 typedef AssociativeArray<string, AssociativeArray<string, string> > losersArray;
 
+#include "loopSearch.cpp"
 
 //Prototypes
 //=====================================
@@ -44,10 +43,7 @@ void   getPlayerWeapons(vector<Player>&,  const losersArray&);
 void   resolveResults(vector<Player>&, const losersArray&);
 bool   isDraw(vector<Player>&);
 
-list<int>     findBiggestLoop(vector<Player> , int, int );
-
-
-void copyContents(Player*, Player*);
+void   copyContents(Player*, Player*);
 
 
 //Main routine
@@ -73,6 +69,8 @@ int main(void) {
   if(isDraw(playersArr))
     cout << "Draw! " << endl;
 
+
+
   for(int i = 0; i < numOfPlayers; i++) {
     cout << playersArr[i].name << (playersArr[i].inGame ? " has won" : " has lost") << endl;
      if(!playersArr[i].inGame) {
@@ -87,10 +85,9 @@ int main(void) {
      }
   }
 
-     playing = ! winners.size() || (winners.size() == 1);
+   playing = ! winners.size() || (winners.size() == 1);
 
-
-
+   findLongestLoopInGraph(playersArr, losesTo);
 
 
   return 0;
@@ -222,60 +219,4 @@ void getPlayerWeapons(vector<Player>& A, const losersArray & losesTo ) {
         A[x].number = x;
         A[x].name = "Player" + to_string(x);
     }
-}
-
-
-
-//  player   destroyer
-list<int>     findBiggestLoop(vector<Player> database, int N, int start) {
-  typedef list<int>::iterator iterator; // to iterate over neighbors
-  bool first = true;
-  //Clear out database:
-  for(int i = 0; i < N; i++) {
-    database[i].isVisited = false;
-    database[i].prev = -1;
-    database[i].cost = 0;
-  }
-  database[start].isVisited = true;
-  queue<int> toDoList;
-  toDoList.push(start);
-
-  while(!toDoList.empty()) {
-    int currentNodeIndex = toDoList.front();
-    Player currentNode = database[currentNodeIndex];
-
-    if(currentNodeIndex == start && !first) {
-       break;
-     }
-
-    cout << "Checking neighbors..." << endl;
-    for(iterator it = currentNode.destroyers.begin(); it != currentNode.destroyers.end(); it++) {
-      Player* currentNeighbor = &(database[*it]);
-      int  currentNeighborIndex = (*it);
-
-      if(currentNeighbor->cost > currentNode.cost + 1 || currentNeighbor->isVisited == false) {
-        currentNeighbor->cost = currentNode.cost + 1;
-        currentNeighbor->prev = currentNodeIndex;
-      }
-
-      if(currentNeighbor->isVisited  == false)
-        toDoList.push(currentNeighborIndex);
-
-
-    } //end of for loop over neighbors
-
-    database[currentNodeIndex].isVisited = true;
-    toDoList.pop();
-    first = false;
-
-  }//end of todo while loop
-
-  list<int> result;
-  first = true;
-  for(int i = start; i != start || first == true; i = database[i].prev) {
-    result.push_back(i);
-    first = false;
-  }
-  return result;
-
 }

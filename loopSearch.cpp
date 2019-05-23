@@ -49,7 +49,9 @@ void findLongestLoopAtNode(vector<Player>& database, int start) {
       toDoList.pop_front();
       continue;
     }
+
     toDoList.pop_front();
+
     //Add all neighbors to to-do list
     for(iterator it = currentNode.destroyers.begin(); it != currentNode.destroyers.end(); it++) {
       Player* currentNeighbor = &(database[*it]);
@@ -72,8 +74,6 @@ void findLongestLoopAtNode(vector<Player>& database, int start) {
   //last in path must lose to first to close loop
   Player lastInPath = database[database[start].path.back()];
   if(!contains(lastInPath.destroyers, database[start].number)) {
-    cout << "last element " << lastInPath.weapon << " does not lose to "
-         << database[start].weapon << endl;
     database[start].path.clear();
   }
 }
@@ -96,8 +96,8 @@ void findLongestLoopInGraph(vector<Player>& players, const losersArray& losesTo)
       findLongestLoopAtNode(players, i);
     }
     else {
-      continue;
       i++;
+      continue;
     }
     if(players[i].path.size() == 0) {
         nodeChecked[i] = true; numOfChecked--;
