@@ -1,7 +1,9 @@
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <list>
+#include <queue>
 #include <vector>
 
 using namespace std;
@@ -31,19 +33,19 @@ typedef AssociativeArray<string, AssociativeArray<string, string> > losersArray;
 
 //Prototypes
 //=====================================
-int     readVerbs(losersArray &);
+int    readVerbs(losersArray &);
 Player* findLoser(Player&, Player&, const losersArray&);
 Player* findWinner(Player&, Player&, const losersArray&);
 
-int     getPlayerNum();
-void    getPlayerWeapons(vector<Player>&,  const losersArray&);
-void    resolveResults(vector<Player>&, const losersArray&);
-bool    isDraw(vector<Player>&);
+int    getPlayerNum();
+void   getPlayerWeapons(vector<Player>&,  const losersArray&);
+void   resolveResults(vector<Player>&, const losersArray&);
+bool   isDraw(vector<Player>&);
 
-void    copyContents(Player*, Player*);
+void   copyContents(Player*, Player*);
 
-void    printResults(const vector<Player>&,  const losersArray&);
-void    playRound(vector<Player>&, const losersArray&);
+void printResults(const vector<Player>& ,  const losersArray & );
+void playRound(vector<Player>&, const losersArray&);
 
 
 
@@ -70,6 +72,7 @@ int main(void) {
 
   int roundNumber = 1;
 
+  //Playing rounds loop
   while(playersArr.size() > 1) {
     cout << endl << "Playing round " << roundNumber << endl;
     cout << "*************************************" << endl;
@@ -77,12 +80,33 @@ int main(void) {
     roundNumber++;
   }
 
+  //Final result output
   cout << "************* WINNER *****************" << endl;
-  cout << "Winner is " << playersArr[0].name << endl << endl;
+  cout << "Winner is " << playersArr[0] << endl << endl;
 }
 
 //Secondary Functions
 //=====================================
+
+//Play round function
+void playRound(vector<Player>& playersArr, const losersArray & losesTo) {
+  getPlayerWeapons(playersArr, losesTo);
+
+  resolveResults(playersArr, losesTo);
+
+  printResults(playersArr, losesTo);
+
+  findLongestLoopInGraph(playersArr, losesTo);
+
+  //If is not draw, pop losers
+  if(!isDraw(playersArr)) {
+    for(int i = 0; i < playersArr.size(); i++)
+      if(playersArr[i].inGame == false) {
+        playersArr.erase(playersArr.begin() + i);
+        i--;
+      }
+  }
+}
 
 //Function to read info from file
 int readVerbs(losersArray &losesTo) {
@@ -194,9 +218,12 @@ void getPlayerWeapons(vector<Player>& A, const losersArray & losesTo ) {
     bool correctInput = false;
 
     for (int x = 0; x < A.size(); x++) {
+        //reinitalize array of players
         A[x].number = x;
         A[x].inGame = true;
         A[x].destroyers = list<int>();
+
+        //get weapon input
         while (true){
           cout <<  A[x].name << " please enter your weapon: " ;
           getline(cin, input);
@@ -225,23 +252,4 @@ void printResults(const vector<Player>& playersArr, const losersArray& losesTo) 
      }
    }
   cout << endl;
-}
-
-void playRound(vector<Player>& playersArr, const losersArray & losesTo) {
-  getPlayerWeapons(playersArr, losesTo);
-
-  resolveResults(playersArr, losesTo);
-
-  printResults(playersArr, losesTo);
-
-  findLongestLoopInGraph(playersArr, losesTo);
-
-  //If is not draw, pop losers
-  if(!isDraw(playersArr)) {
-    for(int i = 0; i < playersArr.size(); i++)
-      if(playersArr[i].inGame == false) {
-        playersArr.erase(playersArr.begin() + i);
-        i--;
-      }
-  }
 }
