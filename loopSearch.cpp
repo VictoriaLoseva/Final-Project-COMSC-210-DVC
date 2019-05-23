@@ -13,7 +13,7 @@ bool contains(list<T>& searchL, const T& val)
 	return true;
 }
 
-void findBiggestLoop(vector<Player>& database, int start) {
+void findLongestLoopAtNode(vector<Player>& database, int start) {
 
   typedef list<int>::iterator iterator; // to iterate over neighbors
   bool first = true;
@@ -36,15 +36,10 @@ void findBiggestLoop(vector<Player>& database, int start) {
     Player currentNode = database[currentNodeIndex];
 
 
-    //Check if we have arrived back at the start
+    //Check if we have arrived back at the start, and if yes, if is new longest
     if(currentNodeIndex == start && !first && currentTop.path.size() > database[start].path.size()) {
-      cout << "Found new longest circuit: " << endl;
       database[start].path =  currentTop.path;
-      for(iterator it = database[start].path.begin(); it != database[start].path.end(); it++) {
-        cout << database[*it].weapon << "(" << database[*it].name << ")" << " -> ";
-      }
-      cout << "done printing";
-      cout << endl;
+      //database[start].path.push_front(start);
       continue;
     }
 
@@ -52,12 +47,10 @@ void findBiggestLoop(vector<Player>& database, int start) {
     //If we are back at start, we have checked length of path in previous if statement
     if(contains(currentTop.path, currentNodeIndex) && !first) {
       toDoList.pop_front();
-      cout << "found loop!" << endl;
       continue;
     }
     toDoList.pop_front();
     //Add all neighbors to to-do list
-    cout << "adding new neighbors of " << currentNode.name << " " << currentNode.weapon << endl;
     for(iterator it = currentNode.destroyers.begin(); it != currentNode.destroyers.end(); it++) {
       Player* currentNeighbor = &(database[*it]);
       int  currentNeighborIndex = (*it);
@@ -67,7 +60,6 @@ void findBiggestLoop(vector<Player>& database, int start) {
       temp.push_back(currentNodeIndex);
       Terminus newTerminus = {currentNeighborIndex, temp};
       toDoList.push_front(newTerminus);
-      cout << "    pushed neighbor, new top: " << database[toDoList.front().index].name << endl;
       } //end of for loop over neighbors
 
     //cout << "done adding neighbors" << endl;
@@ -77,5 +69,67 @@ void findBiggestLoop(vector<Player>& database, int start) {
 
   }//end of todo while loop
 
+  //last in path must lose to first to close loop
+  Player lastInPath = database[database[start].path.back()];
+  if(!contains(lastInPath.destroyers, database[start].number)) {
+    cout << "last element " << lastInPath.weapon << " does not lose to "
+         << database[start].weapon << endl;
+    database[start].path.clear();
+  }
+}
 
+void findLongestLoopInGraph(vector<Player>& players, const losersArray& losesTo) {
+  //For this specific type of graph, if a node belongs to one circuit,
+  //then it belongs to no other circuits.
+  vector<bool> nodeChecked(players.size());
+
+  for(int i = 0; i < nodeChecked.size(); i++) {
+    nodeChecked[i] = false;
+  }
+
+  int numOfChecked = players.size();
+  int i = 0;
+  list<int> longest;
+
+  while(numOfChecked > 0 && i < players.size()) {
+    if(nodeChecked[i] == false) {
+      findLongestLoopAtNode(players, i);
+    }
+    else {
+      continue;
+      i++;
+    }
+    if(players[i].path.size() == 0) {
+        nodeChecked[i] = true; numOfChecked--;
+        i++;
+        continue; //no loop
+    }
+    for(list<int>::iterator it = players[i].path.begin(); it != players[i].path.end(); it++) {
+      nodeChecked[*it] = true; numOfChecked--;
+    } //end of for loop
+    if(players[i].path.size() > longest.size())
+      longest = players[i].path;
+    i++;
+  } //end of while loop
+
+  if(longest.size() == 0) {
+    cout << "No loops!" << endl;
+    return;
+  }
+
+   cout << "Longest loop: " << endl;
+   list<int>::iterator it = longest.begin();
+   list<int>::iterator ij = it;
+
+   for(ij++; ij != longest.end(); it++, ij++) {
+     string loserWeapon = players[*it].weapon;
+     string winnerWeapon = players[*ij].weapon;
+     cout << (it == longest.begin() ? "" : "   ...but ");
+     cout << loserWeapon << losesTo[loserWeapon][winnerWeapon] << winnerWeapon << endl;
+   }
+   string winnerWeapon = players[players[longest.front()].number].weapon;
+   cout << "   ...and " << players[*it].weapon << losesTo[players[*it].weapon][winnerWeapon]
+       << winnerWeapon << "." << endl;
+
+   cout << endl;
 }
