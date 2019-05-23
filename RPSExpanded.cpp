@@ -18,9 +18,13 @@ struct Player {
   int number;
   string name;
   bool inGame;
-  list <string> destroyers;
+  list <int> destroyers;
   string weapon;
-    
+
+  //Graph traversal members
+  bool isVisited;
+  int  prev;
+  int  cost;
 
 };
 
@@ -40,6 +44,9 @@ void   getPlayerWeapons(vector<Player>&,  const losersArray&);
 void   resolveResults(vector<Player>&, const losersArray&);
 bool   isDraw(vector<Player>&);
 
+list<int>     findBiggestLoop(vector<Player> , int, int );
+
+
 void copyContents(Player*, Player*);
 
 
@@ -49,16 +56,12 @@ int main(void) {
 
     bool playing = true;
     vector <Player> winners;
-    
+
   losersArray losesTo;
   if(readVerbs(losesTo) != 0) {
     return 1;
   }
 
- 
-        
-
-     
   int numOfPlayers = getPlayerNum();
 
    vector<Player> playersArr (numOfPlayers);
@@ -76,20 +79,20 @@ int main(void) {
        cout << "    "<<  playersArr[i].weapon ;
        int winner;
        for(int j = 0; j < numOfPlayers; j++) {
-         if(playersArr[i].destroyers.front() == playersArr[j].name)
+         if(playersArr[i].destroyers.front() == playersArr[j].number)
            winner = j;
            winners.push_back(playersArr[winner]);
        }
        cout << losesTo[playersArr[i].weapon][playersArr[winner].weapon] << playersArr[winner].weapon << endl;
      }
   }
-     
-     playing = ! winners.size() || (winners.size() == 1);
-     
-     
-     
 
-    
+     playing = ! winners.size() || (winners.size() == 1);
+
+
+
+
+
   return 0;
 
 }
@@ -178,7 +181,7 @@ void resolveResults(vector<Player>& playersArr, const losersArray& losesTo) {
          continue;
         //Else, assign losers:
        loser->inGame = false;
-       loser->destroyers.push_back(winner->name);
+       loser->destroyers.push_back(winner->number);
 
        //Debbuging segment
        /*cout << "Loser: " << loser->name << " with " << loser->weapon << endl;
@@ -216,11 +219,63 @@ void getPlayerWeapons(vector<Player>& A, const losersArray & losesTo ) {
             cout << "Please enter a correct weapon.." << endl;
         }
         A[x].weapon = input;
+        A[x].number = x;
         A[x].name = "Player" + to_string(x);
     }
-    
-    
-
 }
 
 
+
+//  player   destroyer
+list<int>     findBiggestLoop(vector<Player> database, int N, int start) {
+  typedef list<int>::iterator iterator; // to iterate over neighbors
+  bool first = true;
+  //Clear out database:
+  for(int i = 0; i < N; i++) {
+    database[i].isVisited = false;
+    database[i].prev = -1;
+    database[i].cost = 0;
+  }
+  database[start].isVisited = true;
+  queue<int> toDoList;
+  toDoList.push(start);
+
+  while(!toDoList.empty()) {
+    int currentNodeIndex = toDoList.front();
+    Player currentNode = database[currentNodeIndex];
+
+    if(currentNodeIndex == start && !first) {
+       break;
+     }
+
+    cout << "Checking neighbors..." << endl;
+    for(iterator it = currentNode.destroyers.begin(); it != currentNode.destroyers.end(); it++) {
+      Player* currentNeighbor = &(database[*it]);
+      int  currentNeighborIndex = (*it);
+
+      if(currentNeighbor->cost > currentNode.cost + 1 || currentNeighbor->isVisited == false) {
+        currentNeighbor->cost = currentNode.cost + 1;
+        currentNeighbor->prev = currentNodeIndex;
+      }
+
+      if(currentNeighbor->isVisited  == false)
+        toDoList.push(currentNeighborIndex);
+
+
+    } //end of for loop over neighbors
+
+    database[currentNodeIndex].isVisited = true;
+    toDoList.pop();
+    first = false;
+
+  }//end of todo while loop
+
+  list<int> result;
+  first = true;
+  for(int i = start; i != start || first == true; i = database[i].prev) {
+    result.push_back(i);
+    first = false;
+  }
+  return result;
+
+}
